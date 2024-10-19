@@ -9,6 +9,7 @@ import {
 } from "@/utils/site";
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
+import { Providers } from "@/context";
 import PlausibleProvider from "next-plausible";
 import "@/assets/globals.css";
 
@@ -66,10 +67,12 @@ export default function Layout(props: PropsWithChildren) {
         />
       </head>
       <body>
-        <main className="container mx-auto flex flex-col min-h-screen items-center">
-          <Navbar />
+        <main className="container mx-auto flex flex-col min-h-screen">
+          <Navbar className="p-4 my-4" />
 
-          <div className="mb-auto">{props.children}</div>
+          <div className="mb-auto p-4">
+            <Providers>{props.children}</Providers>
+          </div>
 
           <Footer className="my-4" />
         </main>

@@ -12,3 +12,11 @@ export interface Notification {
   timestamp: number;
   href?: string;
 }
+
+export interface Log {
+  id?: number;
+  userId: number;
+  domain: string;
+  action: string;
+  timestamp?: number;
+}

@@ -10,8 +10,8 @@ export const SERVER_CONFIG = {
 
   DB_CONNECTIONSTRING: process.env.DB_CONNECTIONSTRING,
   SMTP_CONNECTIONSTRING: process.env.SMTP_CONNECTIONSTRING,
-  
-  SMTP_HOST: process.env.SMTP_HOST ?? '',
+
+  SMTP_HOST: process.env.SMTP_HOST ?? "",
   SMTP_FROM: process.env.SMTP_FROM,
   SMTP_USERNAME: process.env.SMTP_USERNAME,
   SMTP_PASSWORD: process.env.SMTP_PASSWORD,

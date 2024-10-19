@@ -1,9 +1,9 @@
-import { Client, ClientConfig } from "pg";
+import { Pool, PoolConfig } from "pg";
 import { SERVER_CONFIG } from "./config";
 
-let dbClient: Client;
+let dbPool: Pool;
 
-export const DB_CLIENT_CONFIG: ClientConfig = {
+export const DB_POOL_CONFIG: PoolConfig = {
   connectionString: SERVER_CONFIG.DB_CONNECTIONSTRING,
   ssl:
     SERVER_CONFIG.NODE_ENV === "production"
@@ -11,46 +11,57 @@ export const DB_CLIENT_CONFIG: ClientConfig = {
       : {
           rejectUnauthorized: false,
         },
+  max: 20, // max. number of clients in the pool
+  idleTimeoutMillis: 30000, // close idle clients after 30 seconds
 };
 
-export async function getDbClient() {
-  if (!dbClient) {
-    console.log("Init db connection..");
-    dbClient = new Client(DB_CLIENT_CONFIG);
-    await dbClient.connect();
+export function getDbPool(): Pool {
+  if (!dbPool) {
+    console.log("Initializing db connection pool...");
+    dbPool = new Pool(DB_POOL_CONFIG);
+
+    dbPool.on("error", (err) => {
+      console.error("Unexpected error on idle client", err);
+    });
   }
 
-  return dbClient;
+  return dbPool;
 }
 
-export async function verify() {
-  const client = await getDbClient();
+export async function verify(): Promise<void> {
+  const pool = getDbPool();
 
   try {
-    const result = await client.query("SELECT NOW()");
+    const result = await pool.query("SELECT NOW()");
     console.log("Db Connection established:", result.rows[0].now);
   } catch (err) {
-    console.error("Error creating tables", err);
-  } finally {
-    await client.end();
+    console.error("Error verifying database connection", err);
   }
 }
 
-export async function seed() {
-  const client = await getDbClient();
+export async function initDbTables(): Promise<void> {
+  const pool = getDbPool();
+  const client = await pool.connect();
 
   try {
-    console.log("Create Next-Auth tables..");
+    await client.query("BEGIN");
+
+    console.log("Creating Next-auth tables...");
     await client.query(createVerificationTokenTable);
     await client.query(createAccountsTable);
     await client.query(createSessionsTable);
     await client.query(createUsersTable);
 
+    console.log("Creating other tables...");
+    await client.query(createLogTable);
+
+    await client.query("COMMIT");
     console.log("Tables created successfully");
   } catch (err) {
+    await client.query("ROLLBACK");
     console.error("Error creating tables", err);
   } finally {
-    await client.end();
+    client.release();
   }
 }
 
@@ -96,4 +107,15 @@ const createUsersTable = `
     "emailVerified" TIMESTAMPTZ,
     image TEXT,
     PRIMARY KEY (id)
+  );`;
+
+const createLogTable = `
+  CREATE TABLE IF NOT EXISTS log (
+    id SERIAL,
+    "userId" INTEGER NOT NULL,
+    domain VARCHAR(255) NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    timestamp TIMESTAMPTZ NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_user FOREIGN KEY("userId") REFERENCES users(id) ON DELETE CASCADE
   );`;

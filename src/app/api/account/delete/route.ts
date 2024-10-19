@@ -1,12 +1,12 @@
 import { AUTH_OPTIONS } from "@/utils/auth";
 import { getServerSession } from "next-auth/next";
-import { getAccount, deleteAccount } from "@/app/services/account";
+import { getAccount, deleteAccount } from "@/services/account";
 
 export async function POST() {
   console.log("GET /api/account");
 
   const session = await getServerSession(AUTH_OPTIONS);
-  if (!session || !session.user?.email) {
+  if (!session || !session.user) {
     return Response.json({ message: "Unauthorized" }, { status: 401 });
   }
 
