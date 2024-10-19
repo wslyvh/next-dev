@@ -38,7 +38,7 @@ export async function createLog(userId: number, action: string, ts?: Date) {
       ? `
         INSERT INTO log ("userId", domain, action, timestamp)
         VALUES ($1, $2, $3, $4)
-        ON CONFLICT ("userId", domain, action, DATE(timestamp)) DO NOTHING
+        ON CONFLICT ("userId", domain, action, timestamp) DO NOTHING
       `
       : `
         INSERT INTO log ("userId", domain, action, timestamp)

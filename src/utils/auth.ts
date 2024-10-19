@@ -12,6 +12,7 @@ import { SMTP_TRANSPORT_CONFIG } from "./email";
 import { SERVER_CONFIG } from "./config";
 import { DB_POOL_CONFIG } from "./db";
 import { createLog } from "@/services/account";
+import { datetime } from "./date";
 
 declare module "next-auth" {
   interface Session {
@@ -33,7 +34,7 @@ export const AUTH_OPTIONS: AuthOptions = {
   events: {
     async signIn({ user }) {
       if (user) {
-        createLog(Number(user.id), "Login", new Date());
+        createLog(Number(user.id), "Login", datetime());
       }
     },
   },
