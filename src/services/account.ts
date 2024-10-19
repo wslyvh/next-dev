@@ -35,11 +35,21 @@ export async function createLog(userId: number, action: string, ts?: Date) {
 
   try {
     const query = ts
-      ? `INSERT INTO log ("userId", domain, action, timestamp) VALUES ($1, $2, $3, $4)`
-      : `INSERT INTO log ("userId", domain, action, timestamp) VALUES ($1, $2, $3, DATE(CURRENT_TIMESTAMP))`;
+      ? `
+        INSERT INTO log ("userId", domain, action, timestamp)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT ("userId", domain, action, DATE(timestamp)) DO NOTHING
+      `
+      : `
+        INSERT INTO log ("userId", domain, action, timestamp)
+        VALUES ($1, $2, $3, DATE(CURRENT_TIMESTAMP))
+        ON CONFLICT ("userId", domain, action, timestamp) DO NOTHING
+      `;
+
     const params = ts
       ? [userId, SITE_DOMAIN, action, ts]
       : [userId, SITE_DOMAIN, action];
+
     const result = await db.query(query, params);
 
     return result.rowCount === 1;

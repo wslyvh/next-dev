@@ -117,5 +117,6 @@ const createLogTable = `
     action VARCHAR(255) NOT NULL,
     timestamp TIMESTAMPTZ NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT fk_user FOREIGN KEY("userId") REFERENCES users(id) ON DELETE CASCADE
+    CONSTRAINT fk_user FOREIGN KEY("userId") REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT unique_log_entry UNIQUE ("userId", domain, action, timestamp)
   );`;
