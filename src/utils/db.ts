@@ -1,6 +1,8 @@
 import { Client, ClientConfig } from "pg";
 import { SERVER_CONFIG } from "./config";
 
+let dbClient: Client;
+
 export const DB_CLIENT_CONFIG: ClientConfig = {
   connectionString: SERVER_CONFIG.DB_CONNECTIONSTRING,
   ssl:
@@ -12,12 +14,13 @@ export const DB_CLIENT_CONFIG: ClientConfig = {
 };
 
 export async function getDbClient() {
-  console.log("Init db connection..");
+  if (!dbClient) {
+    console.log("Init db connection..");
+    dbClient = new Client(DB_CLIENT_CONFIG);
+    await dbClient.connect();
+  }
 
-  const client = new Client(DB_CLIENT_CONFIG);
-  await client.connect();
-
-  return client;
+  return dbClient;
 }
 
 export async function verify() {

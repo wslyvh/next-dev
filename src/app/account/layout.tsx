@@ -1,3 +1,4 @@
+import { AuthenticationProvider } from "@/context/authentication";
 import { AUTH_OPTIONS } from "@/utils/auth";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
@@ -10,5 +11,5 @@ export default async function Layout(props: PropsWithChildren) {
     redirect("api/auth/signin");
   }
 
-  return <>{props.children}</>;
+  return <AuthenticationProvider>{props.children}</AuthenticationProvider>;
 }

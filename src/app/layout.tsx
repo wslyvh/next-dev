@@ -10,7 +10,7 @@ import {
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
 import PlausibleProvider from "next-plausible";
-import "./globals.css";
+import "@/assets/globals.css";
 
 export const metadata: Metadata = {
   applicationName: SITE_NAME,
@@ -67,7 +67,7 @@ export default function Layout(props: PropsWithChildren) {
       </head>
       <body>
         <main className="container mx-auto flex flex-col min-h-screen items-center">
-          <Navbar  />
+          <Navbar />
 
           <div className="mb-auto">{props.children}</div>
 
