@@ -1,4 +1,4 @@
-import { NEWSLETTER_ACTION, NEWSLETTER_SENDER } from "@/utils/site";
+import { NEWSLETTER_ACTION } from "@/utils/site";
 
 interface Props {
   text?: string;
@@ -6,7 +6,7 @@ interface Props {
 }
 
 export function Newsletter(props: Props) {
-  let className = "flex flex-col md:flex-row gap-4 items-center";
+  let className = "flex flex-col md:flex-row gap-4";
   if (props.className) className += ` ${props.className}`;
 
   return (
@@ -26,8 +26,10 @@ export function Newsletter(props: Props) {
         />
 
         <input type="hidden" name="name" value="" />
-        <input type="hidden" name="sender" value={NEWSLETTER_SENDER} />
-        <button className="btn btn-primary btn-sm w-72">{props.text ?? 'Subscribe'}</button>
+        <input type="hidden" name="sender" value="d2VzbGV5QHc1Lmdn" />
+        <button className="btn btn-primary btn-sm w-32">
+          {props.text ?? "Subscribe"}
+        </button>
       </form>
     </>
   );
